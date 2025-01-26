@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "cnn.h"
+#include "btlx25.h"
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
@@ -16,11 +16,20 @@ Log::Log(App* app, const char* ID, const char* server){
 
 void Log::log(char *msg){
     char buffer[100];
-    sprintf(buffer, "%s/log/[%s] %s", this->server, this->ID, msg);
-    //Serial.println(buffer);
-    String toSend = buffer;
-    toSend.replace(" ", "%20");
-    this->app->send(toSend);
+
+    // some tweak in the case that we are sending the log to a log server
+    //
+
+    if (this->server && this->server[0] != '\0'){
+        sprintf(buffer, "%s/log/[%s] %s", this->server, this->ID, msg);
+        String toSend = buffer;
+        toSend.replace(" ", "%20");
+        this->app->send(toSend);
+    }
+    else // simple print on Serial console
+    {
+        Serial.println(msg);
+    }
 }
 
 void App::imAlive(){
@@ -85,6 +94,7 @@ void App::startWiFiManager(){
     Serial.print("Succesfully connected to WIFI [");
     Serial.print(this->IP);
     Serial.println("]");
+    ArduinoOTA.begin();
     this->initNTP();
   }
   else {
@@ -92,9 +102,7 @@ void App::startWiFiManager(){
   }
 
   if (WiFi.SSID() == ""){
-    Serial.println("Starting ArduinoOTA");
-    this->wifiManager->autoConnect("TankLevel");
-    ArduinoOTA.begin();
+    this->wifiManager->autoConnect("ESP8266");
   }
   else {
     Serial.println("Wifi manager not starting");
@@ -229,9 +237,17 @@ bool App::send(String what){
 
   bool result;
 
+  if (this->server && this->server[0] != '\0'){
+      Serial.println("Server to send to not configured");
+      Serial.println(wat);
+      return;
+  }
+
   if (WiFi.status() != WL_CONNECTED){
     return false;
   }
+
+
 
   WiFiClient client;
   HTTPClient http;
