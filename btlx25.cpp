@@ -300,3 +300,33 @@ void App::debug(char* level, unsigned short int channels, char* message){
     this->log(new_buffer);
   }
 }
+
+unsigned short App::readBoots(){
+    unsigned short boots;
+    EEPROM.get(BOOTS_ADDRESS, boots);
+    return boots;
+}
+
+int App::incBoots(){
+  unsigned short boots = this->readBoots();
+  boots ++;
+  EEPROM.put(BOOTS_ADDRESS, boots);
+  EEPROM.commit();
+  return boots;
+}
+
+
+void App::resetBoots(){
+    unsigned short boots = 0;
+    EEPROM.put(BOOTS_ADDRESS, boots);
+    EEPROM.commit();
+}
+
+
+
+
+
+
+
+
+

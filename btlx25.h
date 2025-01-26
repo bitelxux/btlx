@@ -12,7 +12,6 @@
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>         // https://github.com/tzapu/WiFiManager
 
-
 /*
 static const uint8_t D0   = 16;
 static const uint8_t D1   = 5;
@@ -32,6 +31,9 @@ static const uint8_t D10  = 1;
 #define BTLX_DEBUG_SERIAL 0b00000010
 #define BTLX_DEBUG_ALL    0b00000100
 
+// Boots in EEPROM
+#define BOOTS_ADDRESS 0  // 2 bytes. Next to use is 0x2
+			 
 class App;
 
 typedef void (*function_callback)();
@@ -98,6 +100,9 @@ class App{
     void startWiFiManager();
     void updateNTP();
     unsigned long getEpochSeconds();
+    unsigned short readBoots();
+    int incBoots();
+    void resetBoots();
 };
 
 
