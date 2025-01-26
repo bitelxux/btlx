@@ -237,17 +237,9 @@ bool App::send(String what){
 
   bool result;
 
-  if (this->server && this->server[0] != '\0'){
-      Serial.println("Server to send to not configured");
-      Serial.println(wat);
-      return;
-  }
-
   if (WiFi.status() != WL_CONNECTED){
     return false;
   }
-
-
 
   WiFiClient client;
   HTTPClient http;
@@ -300,11 +292,11 @@ void App::debug(char* level, unsigned short int channels, char* message){
   char new_buffer[100];
   sprintf(new_buffer, "[%s] %s", level, message);
 
-  if (channels & DEBUG_SERIAL || channels & DEBUG_ALL){
+  if (channels & BTLX_DEBUG_SERIAL || channels & BTLX_DEBUG_ALL){
     Serial.println(new_buffer);
   }
 
-  if (channels & DEBUG_WIFI || channels & DEBUG_ALL){
+  if (channels & BTLX_DEBUG_WIFI || channels & BTLX_DEBUG_ALL){
     this->log(new_buffer);
   }
 }

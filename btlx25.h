@@ -28,9 +28,9 @@ static const uint8_t D10  = 1;
 */
 
 // for debug
-#define DEBUG_WIFI   0b00000001
-#define DEBUG_SERIAL 0b00000010
-#define DEBUG_ALL    0b00000100
+#define BTLX_DEBUG_WIFI   0b00000001
+#define BTLX_DEBUG_SERIAL 0b00000010
+#define BTLX_DEBUG_ALL    0b00000100
 
 class App;
 
