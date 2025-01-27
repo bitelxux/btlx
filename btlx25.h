@@ -103,6 +103,7 @@ class App{
     unsigned short readBoots();
     int incBoots();
     void resetBoots();
+    char* millis_to_human(unsigned long millis);
 };
 
 

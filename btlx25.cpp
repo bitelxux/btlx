@@ -322,6 +322,24 @@ void App::resetBoots(){
     EEPROM.commit();
 }
 
+char* App::millis_to_human(unsigned long millis)
+{
+    char* buffer = new char[100];
+
+    int seconds = millis/1000;
+
+    int days = int(seconds/86400);
+    seconds = seconds % 86400;
+    int hours = int(seconds/3600);
+    seconds = seconds % 3600;
+    int minutes = int(seconds/60);
+    seconds = seconds % 60;
+
+    sprintf(buffer, "%d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds);
+    return buffer;
+}
+
+
 
 
 
