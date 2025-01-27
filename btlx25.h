@@ -104,6 +104,7 @@ class App{
     int incBoots();
     void resetBoots();
     char* millis_to_human(unsigned long millis);
+    void checkConnection();
 };
 
 

@@ -339,12 +339,24 @@ char* App::millis_to_human(unsigned long millis)
     return buffer;
 }
 
+void checkConnection()  {
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("Reconnecting to WiFi...");
+      WiFi.reconnect();
 
+      int t = millis();
 
+      while (millis() - t < 60000 && WiFi.status() != WL_CONNECTED){
+        delay(2000);
+        Serial.println("Reconnecting to WiFi...");
+      }
 
+      if (WiFi.status() == WL_CONNECTED){
+        Serial.println("WiFi reconnected!");
+      }
+      else {
+        Serial.println("Failed to reconnect to WiFi");
+      }
 
-
-
-
-
-
+    }
+}
