@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <ESP8266WebServer.h>
+
 #include "btlx25.h"
 
 // Define NTP Client to get time
@@ -339,7 +341,7 @@ char* App::millis_to_human(unsigned long millis)
     return buffer;
 }
 
-void checkConnection()  {
+void App::checkConnection()  {
     if (WiFi.status() != WL_CONNECTED) {
       Serial.println("Reconnecting to WiFi...");
       WiFi.reconnect();
@@ -360,3 +362,4 @@ void checkConnection()  {
 
     }
 }
+

@@ -107,5 +107,4 @@ class App{
     void checkConnection();
 };
 
-
 #endif
