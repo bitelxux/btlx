@@ -13,6 +13,7 @@ Timer::Timer(){
 Log::Log(App* app, const char* ID, const char* server){
     this->app = app;
     this->ID = ID;
+    this->IP = "no IP";
     this->server = server;
 }
 
@@ -23,22 +24,24 @@ void Log::log(char *msg){
     //
 
     if (this->server && this->server[0] != '\0'){
-        sprintf(buffer, "%s/log/[%s] %s", this->server, this->ID, msg);
+        sprintf(buffer, "%s/log/[%s][%s] %s", this->server, this->ID, this->IP, msg);
         String toSend = buffer;
         toSend.replace(" ", "%20");
         this->app->send(toSend);
     }
     else // simple print on Serial console
     {
-        sprintf(buffer, "[%s]: %s", this->ID, msg);
+        sprintf(buffer, "[%s][%s]: %s", this->ID, this->IP, msg);
         Serial.println(buffer);
     }
 }
 
+void Log::setIP(char* IP) {
+    this->IP = IP;
+}
+
 void App::imAlive(){
-  char buffer[30];
-  sprintf(buffer, "[%s] I'm alive!!", this->IP);
-  this->logger->log(buffer);
+  this->logger->log("I'm alive !");
 }
 
 App::App(const char* ID, const char* log_server){
@@ -94,6 +97,7 @@ void App::startWiFiManager(){
   if (WiFi.status() == WL_CONNECTED){
     IPAddress ip = WiFi.localIP();
     sprintf(this->IP, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+    this->logger->setIP(this->IP);
     Serial.print("Succesfully connected to WIFI [");
     Serial.print(this->IP);
     Serial.println("]");

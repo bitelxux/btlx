@@ -60,9 +60,12 @@ class Log{
         App* app;
         const char* server;
         const char* ID;
+        char* IP;
 
         Log(App* app, const char* ID, const char* server);
         void log(char* msg);
+	void setIP(char* IP);
+
 };
 
 class App{
