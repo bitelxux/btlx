@@ -105,6 +105,7 @@ class App{
     void resetBoots();
     char* millis_to_human(unsigned long millis);
     void checkConnection();
+    int resetEEPROM(int start, int size);
 };
 
 #endif

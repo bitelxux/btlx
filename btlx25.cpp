@@ -30,7 +30,8 @@ void Log::log(char *msg){
     }
     else // simple print on Serial console
     {
-        Serial.println(msg);
+        sprintf(buffer, "[%s]: %s", this->ID, msg);
+        Serial.println(buffer);
     }
 }
 
@@ -361,5 +362,15 @@ void App::checkConnection()  {
       }
 
     }
+}
+
+int App::resetEEPROM(int start, int size) {
+  int t0 = millis();
+  for (int i=start; i < size; i++){
+    EEPROM.write(i, 0);
+  }
+  EEPROM.commit();
+  int t1 = millis();
+  return t1 - t0;
 }
 
