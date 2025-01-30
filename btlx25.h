@@ -75,7 +75,6 @@ class App{
     const char* log_server = NULL;
     const char* SSID = NULL;
     const char* password = NULL;
-    int LED = 2;
     char IP[16];
     unsigned long tLastConnectionAttempt = 0;
     unsigned long tConnect = 0;

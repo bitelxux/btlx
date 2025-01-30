@@ -54,10 +54,7 @@ App::App(const char* ID, const char* log_server){
 
     this->addTimer(60000, &App::imAlive, "imAlive");
     this->addTimer(1000, &App::handleOTA, "handleOTA");
-    this->addTimer(1000, &App::blinkLED, "blinkLED");
     this->addTimer(60 * 1000, &App::updateNTP, "updateNTP");
-
-    pinMode(LED, OUTPUT);
 
     // WiFiManager
     // Local intialization. Once its business is done, there is no need to keep it around
@@ -114,10 +111,6 @@ void App::startWiFiManager(){
   else {
     Serial.println("Wifi manager not starting");
   }
-}
-
-void App::blinkLED(){
-     digitalWrite(this->LED, !digitalRead(this->LED));
 }
 
 void App::addTimer(int millis, AppCallback function, char*name){
