@@ -1,5 +1,5 @@
-#ifndef cnn_h
-#define cnn_h
+#ifndef btlx25_h
+#define btlx25_h
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
