@@ -33,6 +33,7 @@ static const uint8_t D10  = 1;
 
 // Boots in EEPROM
 #define BOOTS_ADDRESS 0  // 2 bytes. Next to use is 0x2
+#define EEPROM_SIZE 1024
 			 
 class App;
 
@@ -103,7 +104,7 @@ class App{
     void updateNTP();
     unsigned long getEpochSeconds();
     unsigned short readBoots();
-    int incBoots();
+    unsigned short incBoots();
     void resetBoots();
     char* millis_to_human(unsigned long millis);
     void checkConnection();

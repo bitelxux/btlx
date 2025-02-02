@@ -67,6 +67,11 @@ void App::startWiFiManager(){
 
   char passwd[20];
 
+  if (!this->wifiManager) {
+	  Serial.println("wifiManager is NULL");
+	  return;
+  }
+
   strcpy(passwd, this->wifiManager->getWiFiPass().c_str());
   
   Serial.print("SSID is [");
@@ -78,7 +83,7 @@ void App::startWiFiManager(){
   Serial.println("]");
 
   if (WiFi.SSID()){
-    Serial.println("tarting WIFI");
+    Serial.println("starting WIFI");
     WiFi.begin(WiFi.SSID(), passwd);
   } 
 
@@ -307,9 +312,9 @@ unsigned short App::readBoots(){
     return boots;
 }
 
-int App::incBoots(){
+unsigned short App::incBoots(){
   unsigned short boots = this->readBoots();
-  boots ++;
+  boots++;
   EEPROM.put(BOOTS_ADDRESS, boots);
   EEPROM.commit();
   return boots;
