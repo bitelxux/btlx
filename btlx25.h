@@ -7,6 +7,7 @@
 #include <ArduinoOTA.h>
 #include <EEPROM.h> //https://github.com/esp8266/Arduino/blob/master/libraries/EEPROM/EEPROM.h
 #include <NTPClient.h> // install NTPClient from manage libraries
+#include <Ticker.h>
 
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -84,10 +85,14 @@ class App{
     unsigned long tEpoch = 0;
     unsigned long tEpochOffset = 0;
 
+    Ticker* ticker = NULL;
     Timer* timers = NULL;
     Log* logger;
-    App(const char* ID, const char* server);
+    App(const char* ID, const char* server, int control_led);
     WiFiManager *wifiManager = NULL;
+
+    int controlLed = 16; // default control led
+    int controlLedFreq = 500; // no blink by default
     
     void initNTP();
     void addTimer(int millis, AppCallback function, char* name);
@@ -99,8 +104,7 @@ class App{
     bool send(String what);
     String get(String what);
     void handleOTA();
-    void blinkLED();
-    void startWiFiManager();
+    bool startWiFiManager();
     void updateNTP();
     unsigned long getEpochSeconds();
     unsigned short readBoots();
@@ -109,6 +113,8 @@ class App{
     char* millis_to_human(unsigned long millis);
     void checkConnection();
     int resetEEPROM(int start, int size);
+    void handleControlLed();
+    void blinkControlLed(int freq);
 };
 
 #endif

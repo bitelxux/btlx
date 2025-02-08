@@ -44,17 +44,22 @@ void App::imAlive(){
   this->logger->log("I'm alive !");
 }
 
-App::App(const char* ID, const char* log_server){
+App::App(const char* ID, const char* log_server, int controlLed){
     this->ID = ID;
+    this->ticker = new Ticker();
     this->log_server = log_server;
     this->SSID = SSID;
     this->password = password;
     this->timers = NULL;
     this->logger = new Log(this, this->ID, this->log_server);
+    this->controlLed = controlLed;
+    this->controlLedFreq = 0; // off 
 
     this->addTimer(60000, &App::imAlive, "imAlive");
     this->addTimer(1000, &App::handleOTA, "handleOTA");
     this->addTimer(60 * 1000, &App::updateNTP, "updateNTP");
+    //this->addTimer(0, &App::handleControlLed, "handleControlLed");
+    this->ticker->attach(0.001, [this]() { this->handleControlLed(); });
 
     // WiFiManager
     // Local intialization. Once its business is done, there is no need to keep it around
@@ -62,18 +67,22 @@ App::App(const char* ID, const char* log_server){
 
 }
 
-void App::startWiFiManager(){
+void App::blinkControlLed(int freq) {
+    this->controlLedFreq = freq;
+}
+
+bool App::startWiFiManager(){
   //this->wifiManager->resetSettings();
 
   char passwd[20];
 
   if (!this->wifiManager) {
 	  Serial.println("wifiManager is NULL");
-	  return;
+	  return false;
   }
 
   strcpy(passwd, this->wifiManager->getWiFiPass().c_str());
-  
+
   Serial.print("SSID is [");
   Serial.print(WiFi.SSID());
   Serial.println("]");
@@ -82,21 +91,30 @@ void App::startWiFiManager(){
   Serial.print(passwd);
   Serial.println("]");
 
-  if (WiFi.SSID()){
-    Serial.println("starting WIFI");
+  if (WiFi.SSID().length() > 0){
+    this->blinkControlLed(500);
     WiFi.begin(WiFi.SSID(), passwd);
   } 
+  else {
+    this->blinkControlLed(100);
+    this->wifiManager->autoConnect("ESP8266");
+    this->blinkControlLed(0);
+  }
 
   for (int i=0; i<30; i++){
     if (WiFi.status() != WL_CONNECTED) {
+       digitalWrite(this->controlLed, !digitalRead(this->controlLed));
        Serial.print("Wifi not connected [");
        Serial.print(WiFi.SSID());
        Serial.println("]");
        delay(1000);
     }
   }
+  this->log("passed connection");
  
   if (WiFi.status() == WL_CONNECTED){
+    this->blinkControlLed(0);
+    digitalWrite(this->controlLed, HIGH);
     IPAddress ip = WiFi.localIP();
     sprintf(this->IP, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
     this->logger->setIP(this->IP);
@@ -110,15 +128,12 @@ void App::startWiFiManager(){
     Serial.println("Wifi didn't connect");
   }
 
-  if (WiFi.SSID() == ""){
-    this->wifiManager->autoConnect("ESP8266");
-  }
-  else {
-    Serial.println("Wifi manager not starting");
-  }
+
+  this->log("wifi manager return");
+  return WiFi.status() == WL_CONNECTED;
 }
 
-void App::addTimer(int millis, AppCallback function, char*name){
+void App::addTimer(int millis, AppCallback function, char* name){
 
 	Timer* newTimer = new Timer();
 
@@ -342,6 +357,19 @@ char* App::millis_to_human(unsigned long millis)
 
     sprintf(buffer, "%d days, %d hours, %d minutes, %d seconds", days, hours, minutes, seconds);
     return buffer;
+}
+
+void App::handleControlLed() {
+    static unsigned long int lastBlinked = 0;
+
+    if (this->controlLedFreq == 0) {
+	return;
+    }
+
+    if (millis() - lastBlinked > this->controlLedFreq) {
+        digitalWrite(this->controlLed, !digitalRead(this->controlLed));
+	lastBlinked = millis();
+    }
 }
 
 void App::checkConnection()  {
