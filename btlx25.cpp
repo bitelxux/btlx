@@ -46,7 +46,6 @@ void App::imAlive(){
 
 App::App(const char* ID, const char* log_server, int controlLed){
     this->ID = ID;
-    this->ticker = new Ticker();
     this->log_server = log_server;
     this->SSID = SSID;
     this->password = password;
@@ -55,11 +54,14 @@ App::App(const char* ID, const char* log_server, int controlLed){
     this->controlLed = controlLed;
     this->controlLedFreq = 0; // off 
 
-    this->addTimer(60000, &App::imAlive, "imAlive");
-    this->addTimer(1000, &App::handleOTA, "handleOTA");
-    this->addTimer(60 * 1000, &App::updateNTP, "updateNTP");
-    //this->addTimer(0, &App::handleControlLed, "handleControlLed");
-    this->ticker->attach(0.001, [this]() { this->handleControlLed(); });
+    for (int i=0; i<MAX_TICKERS; i++) {
+        this->tickers[i] = NULL;
+    }		
+
+    this->addTicker(60, &App::imAlive);
+    this->addTicker(1, &App::handleOTA);
+    this->addTicker(60, &App::updateNTP);
+    this->addTicker(0.001, &App::handleControlLed);
 
     // WiFiManager
     // Local intialization. Once its business is done, there is no need to keep it around
@@ -69,6 +71,12 @@ App::App(const char* ID, const char* log_server, int controlLed){
 
 void App::blinkControlLed(int freq) {
     this->controlLedFreq = freq;
+}
+
+void App::resetWIFI() {
+    WiFi.disconnect(true);
+    delay(1000);
+    this->wifiManager->resetSettings();
 }
 
 bool App::startWiFiManager(){
@@ -133,6 +141,15 @@ bool App::startWiFiManager(){
   return WiFi.status() == WL_CONNECTED;
 }
 
+unsigned short App::addTicker(float secs, void (App::*callback)()) {
+    unsigned short nTicker = this->num_tickers;
+
+    this->tickers[nTicker] = new Ticker();
+    this->tickers[nTicker]->attach(secs, std::bind(callback, this));
+    this->num_tickers ++;
+    return nTicker;
+}
+
 void App::addTimer(int millis, AppCallback function, char* name){
 
 	Timer* newTimer = new Timer();
@@ -143,6 +160,7 @@ void App::addTimer(int millis, AppCallback function, char* name){
 	newTimer->name = name;
 	newTimer->lastRun = 0;
 	newTimer->next = NULL;
+
 
 	Timer* timer = this->timers;
 	if(!timer){

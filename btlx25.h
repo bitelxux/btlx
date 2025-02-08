@@ -27,6 +27,8 @@ static const uint8_t D9   = 3;
 static const uint8_t D10  = 1;
 */
 
+#define MAX_TICKERS 20
+
 // for debug
 #define BTLX_DEBUG_WIFI   0b00000001
 #define BTLX_DEBUG_SERIAL 0b00000010
@@ -85,7 +87,11 @@ class App{
     unsigned long tEpoch = 0;
     unsigned long tEpochOffset = 0;
 
-    Ticker* ticker = NULL;
+    unsigned short num_tickers = 0;
+    Ticker* tickers[20];
+
+    unsigned short addTicker(float secs, void (App::*callback)());
+
     Timer* timers = NULL;
     Log* logger;
     App(const char* ID, const char* server, int control_led);
@@ -105,6 +111,7 @@ class App{
     String get(String what);
     void handleOTA();
     bool startWiFiManager();
+    void resetWIFI();
     void updateNTP();
     unsigned long getEpochSeconds();
     unsigned short readBoots();
