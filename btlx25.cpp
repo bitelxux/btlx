@@ -58,9 +58,9 @@ App::App(const char* ID, const char* log_server, int controlLed){
         this->tickers[i] = NULL;
     }		
 
-    this->addTicker(60, &App::imAlive);
-    this->addTicker(1, &App::handleOTA);
-    this->addTicker(60, &App::updateNTP);
+    this->addTimer(60000, &App::imAlive, "imAlive");
+    this->addTimer(1000, &App::handleOTA, "handleOTA");
+    this->addTimer(60 * 1000, &App::updateNTP, "updateNTP");
     this->addTicker(0.001, &App::handleControlLed);
 
     // WiFiManager
