@@ -61,6 +61,11 @@ App::App(const char* ID, const char* log_server, int controlLed){
     this->addTimer(60000, &App::imAlive, "imAlive");
     this->addTimer(1000, &App::handleOTA, "handleOTA");
     this->addTimer(60 * 1000, &App::updateNTP, "updateNTP");
+
+    // handleControl is a ticker because we want the led to operate even when the code
+    // is stuck at some point (such as wifi-configuration)
+    // rest of timers are regular ones managed by attendTimers because some take very long
+    // and the can not be tickers -they would restart the board-
     this->addTicker(0.001, &App::handleControlLed);
 
     // WiFiManager
@@ -105,7 +110,7 @@ bool App::startWiFiManager(){
   } 
   else {
     this->blinkControlLed(100);
-    this->wifiManager->autoConnect("ESP8266");
+    this->wifiManager->autoConnect(this->ID);
     this->blinkControlLed(0);
   }
 
