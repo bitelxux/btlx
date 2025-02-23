@@ -18,15 +18,19 @@ Log::Log(App* app, const char* ID, const char* server){
 }
 
 void Log::log(char *msg){
-    char buffer[100];
+    char buffer[1024];
 
     // some tweak in the case that we are sending the log to a log server
-    //
 
     if (this->server && this->server[0] != '\0'){
-        sprintf(buffer, "%s/log/[%s][%s] %s", this->server, this->ID, this->IP, msg);
+        sprintf(buffer, "[%s][%s] %s", this->ID, this->IP, msg);
+	String strMsg = buffer;
+        strMsg.replace(" ", "%20");
+        strMsg.replace("/", "%2F");
+
+	// complete the request
+        sprintf(buffer, "%s/log/%s", this->server, strMsg.c_str());
         String toSend = buffer;
-        toSend.replace(" ", "%20");
         this->app->send(toSend);
     }
     else // simple print on Serial console
