@@ -127,7 +127,6 @@ bool App::startWiFiManager(){
        delay(1000);
     }
   }
-  this->log("passed connection");
  
   if (WiFi.status() == WL_CONNECTED){
     this->blinkControlLed(0);
@@ -145,8 +144,6 @@ bool App::startWiFiManager(){
     Serial.println("Wifi didn't connect");
   }
 
-
-  this->log("wifi manager return");
   return WiFi.status() == WL_CONNECTED;
 }
 
